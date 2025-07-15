@@ -1,0 +1,19 @@
+Implement a Python Flask (or any Python framework) backend endpoint that:
+Keeps HTTP connections open for SSE, or Establishes persistent WebSocket connections.The backend maintains active client connections.
+The frontend creates an RxJS Observable that listens to a streaming endpoint exposed by the backend.
+
+The connection can be established using Server-Sent Events (SSE): A one-way HTTP connection for server → client updates.
+WebSockets: A full-duplex connection allowing bi-directional communication.
+
+On task creation, update, or deletion in the backend: The backend creates an event payload describing the change (e.g., JSON with type and task data).
+This event is pushed into a message broker or an internal queue/pub-sub system.
+
+The backend listens to the event source (queue or message broker). When a new event arrives, it is streamed to all connected clients via SSE or WebSocket. 
+The event is formatted according to the streaming protocol:
+exP
+SSE: data: <json>\n\n 
+WebSocket: JSON message frame.
+
+The RxJS Observable connected to the stream: Receives incoming events. Parses the event data (JSON). Emits new values to subscribers (e.g., UI components).
+SSE automatically attempts reconnection if the connection drops. WebSocket clients detect disconnects and reconnect as needed. The backend cleans up disconnected clients.
+Provides REST API + streaming endpoint (SSE/WebSocket). Manages event generation and broadcasting.
